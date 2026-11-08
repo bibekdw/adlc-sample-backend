@@ -33,6 +33,19 @@ class TaskControllerTest {
                 .content("{\"title\":\"\"}"))
             .andExpect(status().isBadRequest());
     }
+    @Test void accepts200CharacterTitle() throws Exception {
+        String title = "a".repeat(200);
+        String json = "{\"title\":\"" + title + "\",\"priority\":\"HIGH\"}";
+        mvc.perform(post("/api/tasks").contentType(MediaType.APPLICATION_JSON).content(json))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.title").value(title));
+    }
+    @Test void rejects201CharacterTitle() throws Exception {
+        String title = "a".repeat(201);
+        String json = "{\"title\":\"" + title + "\"}";
+        mvc.perform(post("/api/tasks").contentType(MediaType.APPLICATION_JSON).content(json))
+            .andExpect(status().isBadRequest());
+    }
     @Test void healthIsAvailable() throws Exception {
         mvc.perform(get("/healthz")).andExpect(status().isOk());
     }

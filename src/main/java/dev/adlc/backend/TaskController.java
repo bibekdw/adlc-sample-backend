@@ -2,6 +2,7 @@ package dev.adlc.backend;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +16,7 @@ public class TaskController {
     public enum Priority { LOW, MEDIUM, HIGH }
     public enum Status { PENDING, COMPLETED }
     public record Task(long id, String title, Priority priority, Status status) {}
-    public record NewTask(@NotBlank String title, Priority priority) {}
+    public record NewTask(@NotBlank @Size(max=200) String title, Priority priority) {}
 
     private final AtomicLong nextId = new AtomicLong(0);
     private final Map<Long, Task> tasks = new ConcurrentHashMap<>();
