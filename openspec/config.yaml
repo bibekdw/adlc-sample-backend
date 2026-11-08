@@ -1,0 +1,16 @@
+schema: spec-driven
+
+# Project context (constraints an agent cannot infer by reading the code)
+context: |
+  This repository holds an in-memory demo backend (Java 21, Spring Boot, Maven).
+  Planning only: OpenSpec change folders under openspec/changes/<change-id>/ describe intended work.
+  Main specs (openspec/specs/) describe implemented behavior and are updated only by `openspec archive`
+  after an implementation has merged. Planning PRs must never edit them.
+  No authorization or production services exist in this sample.
+
+rules:
+  proposal:
+    - Reference the source story as owner/repo#number and state the change id.
+    - State out-of-scope items explicitly.
+  tasks:
+    - Include test tasks for every requirement scenario.
