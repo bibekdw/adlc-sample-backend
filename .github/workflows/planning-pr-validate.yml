@@ -10,7 +10,7 @@ permissions:
 env:
   # Immutable platform commit providing scripts/validate_planning_pr.py and configs/openspec.json.
   # Set to the full 40-character merge SHA of the platform setup PR; update via a reviewed setup PR only.
-  ADLC_PLATFORM_REF: "REPLACE_WITH_PLATFORM_MERGE_SHA"
+  ADLC_PLATFORM_REF: "c32eb9076fe78e742c618562ea247fd3c5da867b"
 jobs:
   validate:
     if: startsWith(github.head_ref, 'adlc/plan/')
