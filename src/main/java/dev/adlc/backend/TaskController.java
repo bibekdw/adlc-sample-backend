@@ -44,4 +44,10 @@ public class TaskController {
         Task updated = tasks.computeIfPresent(id, (key, old) -> new Task(old.id(), old.title(), old.priority(), Status.COMPLETED));
         return updated == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(updated);
     }
+
+    @DeleteMapping("/api/tasks/{id}")
+    public ResponseEntity<Void> delete(@PathVariable long id) {
+        Task removed = tasks.remove(id);
+        return removed == null ? ResponseEntity.notFound().build() : ResponseEntity.noContent().build();
+    }
 }

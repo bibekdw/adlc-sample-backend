@@ -7,8 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,5 +47,70 @@ class TaskControllerTest {
     }
     @Test void healthIsAvailable() throws Exception {
         mvc.perform(get("/healthz")).andExpect(status().isOk());
+    }
+
+    @Test void successfulDeletionReturnsHttp204() throws Exception {
+        String body = mvc.perform(post("/api/tasks").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Task to delete\"}"))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+        long id = new com.fasterxml.jackson.databind.ObjectMapper().readTree(body).get("id").asLong();
+        mvc.perform(delete("/api/tasks/" + id))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test void deletedTaskNoLongerAppearsInList() throws Exception {
+        String body = mvc.perform(post("/api/tasks").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Task to delete\"}"))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+        long id = new com.fasterxml.jackson.databind.ObjectMapper().readTree(body).get("id").asLong();
+        mvc.perform(delete("/api/tasks/" + id))
+            .andExpect(status().isNoContent());
+        mvc.perform(get("/api/tasks"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[?(@.id == " + id + ")]").doesNotExist());
+    }
+
+    @Test void deletedTaskNoLongerAppearsInFilteredList() throws Exception {
+        String body = mvc.perform(post("/api/tasks").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Pending task\"}"))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+        long id = new com.fasterxml.jackson.databind.ObjectMapper().readTree(body).get("id").asLong();
+        mvc.perform(delete("/api/tasks/" + id))
+            .andExpect(status().isNoContent());
+        mvc.perform(get("/api/tasks?status=PENDING"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[?(@.id == " + id + ")]").doesNotExist());
+    }
+
+    @Test void deletingNonExistentTaskReturnsHttp404() throws Exception {
+        mvc.perform(delete("/api/tasks/99999"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test void deletingSameTaskTwice() throws Exception {
+        String body = mvc.perform(post("/api/tasks").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Task\"}"))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+        long id = new com.fasterxml.jackson.databind.ObjectMapper().readTree(body).get("id").asLong();
+        mvc.perform(delete("/api/tasks/" + id))
+            .andExpect(status().isNoContent());
+        mvc.perform(delete("/api/tasks/" + id))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test void completingDeletedTaskReturnsHttp404() throws Exception {
+        String body = mvc.perform(post("/api/tasks").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\":\"Task\"}"))
+            .andExpect(status().isCreated())
+            .andReturn().getResponse().getContentAsString();
+        long id = new com.fasterxml.jackson.databind.ObjectMapper().readTree(body).get("id").asLong();
+        mvc.perform(delete("/api/tasks/" + id))
+            .andExpect(status().isNoContent());
+        mvc.perform(post("/api/tasks/" + id + "/complete"))
+            .andExpect(status().isNotFound());
     }
 }
