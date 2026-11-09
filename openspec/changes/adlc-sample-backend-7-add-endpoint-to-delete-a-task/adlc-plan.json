@@ -1,0 +1,11 @@
+{
+  "change_id": "adlc-sample-backend-7-add-endpoint-to-delete-a-task",
+  "contract_refs": [
+    "task-deletion"
+  ],
+  "depends_on": [],
+  "epic": null,
+  "planning_revision": 1,
+  "repository": "bibekdw/adlc-sample-backend",
+  "story": "bibekdw/adlc-sample-backend#7"
+}
