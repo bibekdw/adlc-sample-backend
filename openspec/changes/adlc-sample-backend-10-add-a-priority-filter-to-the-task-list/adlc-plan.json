@@ -1,0 +1,9 @@
+{
+  "change_id": "adlc-sample-backend-10-add-a-priority-filter-to-the-task-list",
+  "contract_refs": [],
+  "depends_on": [],
+  "epic": null,
+  "planning_revision": 1,
+  "repository": "bibekdw/adlc-sample-backend",
+  "story": "bibekdw/adlc-sample-backend#10"
+}
